@@ -66,7 +66,27 @@
   //      Backbone.history.start();
   //    }
   //  });
-  //   
+  //
+  //  Base URL option lets parent router determine which urls this router responds to:
+  //
+  //  var CatsController = Backbone.Controller.extend({
+  //    routes: {
+  //      ':catid/name': 'showCatName'
+  //    },
+  //    showCatName: function(catid) {
+  //    }
+  //  });
+  //
+  //  var Application = Backbone.Router.extend({
+  //    initialize: function() {
+  //      this.controllers.cats = new CatsController({
+  //        base_url: 'my_big_app/cats',
+  //        router: this
+  //      });
+  //  }});
+  //
+  //  Then the url to show the cat name is: 'cats/:catid/name'
+  //
   //  ========
   //
   //  Auto router
@@ -95,6 +115,9 @@
   //
   var bindRoutes = function(Router) {
     for (var url in this.routes) {
+      if (this.options.base_url) {
+        url = this.options.base_url + '/' + url;
+      }
       // Using default Backbone.js route method.
       // Same URLs from different controllers are not allowed.
       // Last controller with same URL will be used.
@@ -102,12 +125,17 @@
     }
   },
   onRoute = function() {
-    var self = this,
-        args = _.toArray(arguments),
-        url = args[0],
-        methodName = this.routes[url],
-        params = args.slice(1),
-        triggerRouteAndAfterRoute = function() {
+    var self = this;
+    var args = _.toArray(arguments);
+    var url = args[0];
+    var params = args.slice(1);
+
+    if (this.options.base_url && url.length > this.options.base_url.length + 1) {
+      url = url.substring(this.options.base_url.length + 1); // +1 = '/'
+    }
+
+    var methodName = this.routes[url];
+    var triggerRouteAndAfterRoute = function() {
           // Call route method with routing parameters like :id, *path etc
           self[methodName].apply(self, params);
 
@@ -115,8 +143,10 @@
           if ( _.isFunction(self.onAfterRoute)) {
             self.onAfterRoute.apply(self, args);
           }
-        },
-        beforeRouteResult, isPromiseObj;
+        };
+
+    var beforeRouteResult;
+    var isPromiseObj;
 
     // Call remove if router goes to another controller
     if (cachedController && cachedController !== this &&

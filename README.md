@@ -187,6 +187,29 @@ var cats = new CatsController({router: true});
 var dogs = new DogsController({router: true});
 ```
 
+### Controller router can use partial urls:
+
+```
+var CatsController = Backbone.Controller.extend({
+  routes: {
+   ':catid/name': 'showCatName'
+  },
+  showCatName: function(catid) {
+  }
+});
+
+var Application = Backbone.Router.extend({
+  initialize: function() {
+    this.controllers.cats = new CatsController({
+      base_url: 'my_big_app/cats',
+      router: this
+    });
+}});
+```
+
+Then the url to show the cat name is: `my_big_app/cats/:catid/name`
+
+
 ### Before / after routing
 
 Controller automatically calls `onBeforeRoute` / `onAfterRoute` functions when processing routes.
