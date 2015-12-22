@@ -6,17 +6,20 @@
 
 (function(root, factory) {
 
-  // Set up Backbone.Controller appropriately for the environment. Start with AMD.
-  if (typeof define === 'function' && define.amd) {
-    define(['underscore', 'backbone', 'exports'], function(_, Backbone, exports) {
-      // Export global even in AMD case in case this script is loaded with
-      // others that may still expect a global Backbone.
-      root.Backbone.Controller = factory(root, exports, _, Backbone);
-      return root.Backbone.Controller;
-    });
+  // This was not working with webpack for some reason.
+  // // Set up Backbone.Controller appropriately for the environment. Start with AMD.
+  // if (typeof define === 'function' && define.amd) {
+  //   define(['underscore', 'backbone', 'exports'], function(_, Backbone, exports) {
+  //     // Export global even in AMD case in case this script is loaded with
+  //     // others that may still expect a global Backbone.
+  //     root.Backbone.Controller = factory(root, exports, _, Backbone);
+  //     return root.Backbone.Controller;
+  //   });
 
-  // Next for Node.js or CommonJS.
-  } else if (typeof exports !== 'undefined') {
+  // // Next for Node.js or CommonJS.
+  // } else 
+
+  if (typeof exports !== 'undefined') {
     var _ = require('underscore'),
         Backbone = require('backbone');
     module.exports = factory(root, exports, _, Backbone);
